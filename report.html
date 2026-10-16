@@ -1,0 +1,18 @@
+<!doctype html><html lang='en'><head><meta charset='utf-8'><title>FX02 Ops Reports, report</title><style>body{font-family:Arial,sans-serif;margin:24px}table{border-collapse:collapse}td,th{border:1px solid #999;padding:3px 8px}.sub td{font-style:italic;background:#eee}.bar{background:#26364d;color:#fff;padding:6px}.bar a{color:#fff}</style><script src='data.js'></script><script src='app.js'></script></head><body><div id="m">Loading report...</div><script>
+const q = new URLSearchParams(location.search), id = q.get("id"), pg = Math.max(1, +(q.get("page") || 1));
+requireData().then(d => { if (!d) return; setTimeout(() => {
+  const r = d.reports.find(x => x.id === id), m = document.getElementById("m");
+  if (!r) { m.innerHTML = bar(d.user) + "<p>Report not found.</p>"; return; }
+  let h = bar(d.user) + `<h1>${r.id} ${r.title}</h1>`;
+  if (!r.rows.length) { m.innerHTML = h + "<p>No data for this period.</p><p><a href='reports.html'>All reports</a></p>"; return; }
+  const size = 25, pages = Math.ceil(r.rows.length / size), p = Math.min(pg, pages);
+  const rows = r.rows.slice((p - 1) * size, p * size), sum = rows.reduce((s, x) => s + (x.berth_hours || 0), 0);
+  h += `<p><b>Total records: ${r.rows.length}</b></p><p>Showing ${(p - 1) * size + 1}-${(p - 1) * size + rows.length} of ${r.rows.length}</p>`;
+  h += "<table><tr><th>Call ID</th><th>Vessel</th><th>Port</th><th>Arrival (UTC)</th><th>Departure (UTC)</th><th>Berth hours</th><th>Status</th></tr>";
+  h += rows.map(x => `<tr><td>${x.call_id}</td><td>${x.vessel}</td><td>${x.port}</td><td>${x.arrival_utc}</td><td>${x.departure_utc || ""}</td><td>${x.berth_hours === null ? "" : x.berth_hours.toFixed(1)}</td><td>${x.status}</td></tr>`).join("");
+  h += `<tr class="sub"><td colspan="5">Page subtotal (berth hours)</td><td>${sum.toFixed(1)}</td><td></td></tr></table><p>`;
+  if (p > 1) h += `<a href="report.html?id=${id}&page=${p - 1}">Previous page</a> `;
+  h += `Page ${p} of ${pages}`;
+  if (p < pages) h += ` <a href="report.html?id=${id}&page=${p + 1}">Next page</a>`;
+  m.innerHTML = h + "</p><p><a href='reports.html'>All reports</a></p>"; }, 1500); });
+</script></body></html>

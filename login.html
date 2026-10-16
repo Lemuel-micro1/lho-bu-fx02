@@ -1,0 +1,8 @@
+<!doctype html><html lang='en'><head><meta charset='utf-8'><title>FX02 Ops Reports, sign in</title><style>body{font-family:Arial,sans-serif;margin:24px}table{border-collapse:collapse}td,th{border:1px solid #999;padding:3px 8px}.sub td{font-style:italic;background:#eee}.bar{background:#26364d;color:#fff;padding:6px}.bar a{color:#fff}</style><script src='data.js'></script><script src='app.js'></script></head><body><h1>FX02 Ops Reports</h1><p>Internal tool. Sign in.</p>
+<form id="f"><p><label>Username <input id="u" autocomplete="username"></label></p>
+<p><label>Password <input id="p" type="password" autocomplete="current-password"></label></p>
+<p><button type="submit">Sign in</button></p><p id="e" style="color:#b00"></p></form>
+<script>document.getElementById("f").onsubmit = async ev => { ev.preventDefault();
+  const k = await deriveKey(document.getElementById("u").value.trim(), document.getElementById("p").value);
+  if (await keyOk(k)) { localStorage.setItem(FXK, hex(k)); location.href = "reports.html"; }
+  else document.getElementById("e").textContent = "Invalid username or password."; };</script></body></html>
